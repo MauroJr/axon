@@ -1,0 +1,37 @@
+{
+  "name": "@bitbybit/axon",
+  "version": "1.0.0",
+  "description": "message-oriented socket library for node.js heavily inspired by zeromq",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MauroJr/axon.git"
+  },
+  "keywords": [
+    "message-queue",
+    "zmq",
+    "pubsub",
+    "ipc",
+    "rpc"
+  ],
+  "author": "Mauro Junior",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MauroJr/axon/issues"
+  },
+  "homepage": "https://github.com/MauroJr/axon#readme",
+  "devDependencies": {
+    "eslint": "^5.8.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0"
+  },
+  "dependencies": {
+    "@bitbybit/amp": "^1.0.0",
+    "amp-message": "^0.1.2",
+    "debug": "^4.1.0",
+    "eventemitter3": "^3.1.0"
+  }
+}
