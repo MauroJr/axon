@@ -3,9 +3,8 @@
 /**
  * Module dependencies.
  */
-const { inherits } = require('util');
 
-const Socket = require('./sock');
+const createSocket = require('./create-socket');
 const { slice } = require('../utils');
 const queue = require('../plugins/queue');
 
@@ -21,45 +20,46 @@ module.exports = PubSocket;
  * @api private
  */
 function PubSocket() {
-  Socket.call(this);
+  const socket = createSocket();
+  let ready = false;
 
-  const self = this;
+  socket.use(queue());
 
-  this.ready = false;
-  this.use(queue());
+  socket.on('bind', setReady);
+  socket.on('connect', setReady);
 
-  function ready() {
-    self.ready = true;
+  return Object.assign(
+    {
+      send
+    },
+    socket
+  );
+
+  function setReady() {
+    ready = true;
   }
 
-  this.on('bind', ready);
-  this.on('connect', ready);
+  /**
+   * Send `msg` to all established peers.
+   *
+   * @param {any} msg
+   * @api public
+   */
+  function send(msg) {
+    var socks = socket.socks;
+    var len = socks.length;
+    var sock;
+    var i;
+
+    if (!ready) return socket.enqueue(slice(arguments));
+
+    const buf = socket.pack(arguments);
+
+    for (i = 0; i < len; i += 1) {
+      sock = socks[i];
+      if (sock.writable) sock.write(buf);
+    }
+
+    return this;
+  }
 }
-
-/**
- * Inherits from `Socket.prototype`.
- */
-inherits(PubSocket, Socket);
-
-/**
- * Send `msg` to all established peers.
- *
- * @param {any} msg
- * @api public
- */
-PubSocket.prototype.send = function (msg) {
-  var socks = this.socks;
-  var len = socks.length;
-  var sock;
-
-  if (!this.ready) return this.enqueue(slice(arguments));
-
-  var buf = this.pack(arguments);
-
-  for (var i = 0; i < len; i++) {
-    sock = socks[i];
-    if (sock.writable) sock.write(buf);
-  }
-
-  return this;
-};
