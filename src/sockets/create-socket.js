@@ -1,5 +1,7 @@
 'use strict';
 
+/* eslint-disable */
+
 const net = require('net');
 const fs = require('fs');
 const url = require('url');
@@ -164,7 +166,7 @@ function createSocket(opts = {}) {
    * @api private
    */
   function handleErrors(sock) {
-    sock.on('error', function (err) {
+    sock.on('error', function(err) {
       debug('%s error %s', type, err.code || err.message);
       emitter.emit('socket error', err);
       removeSocket(sock);
@@ -190,7 +192,7 @@ function createSocket(opts = {}) {
    */
   // eslint-disable-next-line no-unused-vars
   function onMessage(sock) {
-    return function (buf) {
+    return function(buf) {
       const msg = new Message(buf);
       // @ts-ignore
       emitter.emit(...['message'].concat(msg.args));
@@ -249,7 +251,7 @@ function createSocket(opts = {}) {
 
     handleErrors(sock);
 
-    sock.on('close', function () {
+    sock.on('close', function() {
       emitter.emit('socket close', sock);
       connected = false;
       removeSocket(sock);
@@ -257,7 +259,7 @@ function createSocket(opts = {}) {
       retry = retry || settings.retryTimeout;
       if (retry === 0) return;
 
-      setTimeout(function () {
+      setTimeout(function() {
         debug('%s attempting reconnect', type);
         emitter.emit('reconnect attempt');
         sock.destroy();
@@ -269,7 +271,7 @@ function createSocket(opts = {}) {
       }, retry);
     });
 
-    sock.on('connect', function () {
+    sock.on('connect', function() {
       debug('%s connect', type);
       connected = true;
       addSocket(sock);
@@ -299,7 +301,7 @@ function createSocket(opts = {}) {
     addSocket(sock);
     handleErrors(sock);
     emitter.emit('connect', sock);
-    sock.on('close', function () {
+    sock.on('close', function() {
       debug('%s disconnect %s', type, addr);
       emitter.emit('disconnect', sock);
       removeSocket(sock);
@@ -357,7 +359,7 @@ function createSocket(opts = {}) {
     debug('%s bind %s:%s', type, host, port);
     server.on('listening', () => emitter.emit('bind'));
 
-    server.on('error', (err) => {
+    server.on('error', err => {
       if (unixSocket) {
         if (err.code === 'EADDRINUSE') {
           // Unix file socket and error EADDRINUSE is the case if
@@ -367,7 +369,7 @@ function createSocket(opts = {}) {
           // We try to connect to socket via plain network socket
           const clientSocket = new net.Socket();
 
-          clientSocket.on('error', function (e2) {
+          clientSocket.on('error', function(e2) {
             if (e2.code === 'ECONNREFUSED') {
               // No other server listening, so we can delete stale
               // socket file and reopen server socket
@@ -379,7 +381,7 @@ function createSocket(opts = {}) {
 
           clientSocket.connect(
             { path: port },
-            function () {
+            function() {
               // Connection is possible, so other server is listening
               // on this file socket
               throw err;

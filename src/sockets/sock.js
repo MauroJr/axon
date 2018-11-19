@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* eslint-disable */
 
 'use strict';
 
@@ -72,7 +73,7 @@ Configurable(Socket.prototype);
  * @param {Function} plugin
  * @api private
  */
-Socket.prototype.use = function (plugin) {
+Socket.prototype.use = function(plugin) {
   plugin(this);
   return this;
 };
@@ -84,7 +85,7 @@ Socket.prototype.use = function (plugin) {
  * @return {Buffer}
  * @api private
  */
-Socket.prototype.pack = function (args) {
+Socket.prototype.pack = function(args) {
   var msg = new Message(args);
   return msg.toBuffer();
 };
@@ -94,9 +95,9 @@ Socket.prototype.pack = function (args) {
  *
  * @api private
  */
-Socket.prototype.closeSockets = function () {
+Socket.prototype.closeSockets = function() {
   debug('%s closing %d connections', this.type, this.socks.length);
-  this.socks.forEach(function (sock) {
+  this.socks.forEach(function(sock) {
     sock.destroy();
   });
 };
@@ -110,7 +111,7 @@ Socket.prototype.closeSockets = function () {
  * @param {Function} [fn]
  * @api public
  */
-Socket.prototype.close = function (fn) {
+Socket.prototype.close = function(fn) {
   debug('%s closing', this.type);
   this.closing = true;
   this.closeSockets();
@@ -123,7 +124,7 @@ Socket.prototype.close = function (fn) {
  * @param {Function} [fn]
  * @api public
  */
-Socket.prototype.closeServer = function (fn) {
+Socket.prototype.closeServer = function(fn) {
   debug('%s closing server', this.type);
   // @ts-ignore
   this.server.on('close', this.emit.bind(this, 'close'));
@@ -137,7 +138,7 @@ Socket.prototype.closeServer = function (fn) {
  * @return {Object}
  * @api public
  */
-Socket.prototype.address = function () {
+Socket.prototype.address = function() {
   if (!this.server) return;
   const addr = this.server.address();
   // @ts-ignore
@@ -152,7 +153,7 @@ Socket.prototype.address = function () {
  * @api private
  */
 
-Socket.prototype.removeSocket = function (sock) {
+Socket.prototype.removeSocket = function(sock) {
   var i = this.socks.indexOf(sock);
   if (!~i) return;
   debug('%s remove socket %d', this.type, i);
@@ -165,7 +166,7 @@ Socket.prototype.removeSocket = function (sock) {
  * @param {net.Socket} sock
  * @api private
  */
-Socket.prototype.addSocket = function (sock) {
+Socket.prototype.addSocket = function(sock) {
   var parser = new Parser();
   var i = this.socks.push(sock) - 1;
   debug('%s add socket %d', this.type, i);
@@ -185,9 +186,9 @@ Socket.prototype.addSocket = function (sock) {
  * @param {net.Socket} sock
  * @api private
  */
-Socket.prototype.handleErrors = function (sock) {
+Socket.prototype.handleErrors = function(sock) {
   var self = this;
-  sock.on('error', function (err) {
+  sock.on('error', function(err) {
     debug('%s error %s', self.type, err.code || err.message);
     self.emit('socket error', err);
     self.removeSocket(sock);
@@ -210,10 +211,10 @@ Socket.prototype.handleErrors = function (sock) {
  * @api private
  */
 // eslint-disable-next-line no-unused-vars
-Socket.prototype.onmessage = function (_sock) {
+Socket.prototype.onmessage = function(_sock) {
   var self = this;
 
-  return function (buf) {
+  return function(buf) {
     var msg = new Message(buf);
     // @ts-ignore
     self.emit(...['message'].concat(msg.args));
@@ -233,7 +234,7 @@ Socket.prototype.onmessage = function (_sock) {
  * @return {Socket}
  * @api public
  */
-Socket.prototype.connect = function (port, host, fn) {
+Socket.prototype.connect = function(port, host, fn) {
   const self = this;
   if (this.type === 'server') throw new Error('cannot connect() after bind()');
   if (typeof host === 'function') {
@@ -270,7 +271,7 @@ Socket.prototype.connect = function (port, host, fn) {
 
   this.handleErrors(sock);
 
-  sock.on('close', function () {
+  sock.on('close', function() {
     self.emit('socket close', sock);
     self.connected = false;
     self.removeSocket(sock);
@@ -278,7 +279,7 @@ Socket.prototype.connect = function (port, host, fn) {
     const retry = self.retry || self.get('retry timeout');
     if (retry === 0) return;
 
-    setTimeout(function () {
+    setTimeout(function() {
       debug('%s attempting reconnect', self.type);
       self.emit('reconnect attempt');
       sock.destroy();
@@ -290,7 +291,7 @@ Socket.prototype.connect = function (port, host, fn) {
     }, retry);
   });
 
-  sock.on('connect', function () {
+  sock.on('connect', function() {
     debug('%s connect', self.type);
     self.connected = true;
     self.addSocket(sock);
@@ -314,14 +315,14 @@ Socket.prototype.connect = function (port, host, fn) {
  * @api private
  */
 
-Socket.prototype.onconnect = function (sock) {
+Socket.prototype.onconnect = function(sock) {
   var self = this;
   var addr = `${sock.remoteAddress}:${sock.remotePort}`;
   debug('%s accept %s', self.type, addr);
   this.addSocket(sock);
   this.handleErrors(sock);
   this.emit('connect', sock);
-  sock.on('close', function () {
+  sock.on('close', function() {
     debug('%s disconnect %s', self.type, addr);
     self.emit('disconnect', sock);
     self.removeSocket(sock);
@@ -345,7 +346,7 @@ Socket.prototype.onconnect = function (sock) {
  * @api public
  */
 
-Socket.prototype.bind = function (port, host, fn) {
+Socket.prototype.bind = function(port, host, fn) {
   var self = this;
   if (this.type === 'client') throw new Error('cannot bind() after connect()');
   if (typeof host === 'function') {
@@ -380,7 +381,7 @@ Socket.prototype.bind = function (port, host, fn) {
 
   if (unixSocket) {
     // TODO: move out
-    this.server.on('error', function (e) {
+    this.server.on('error', function(e) {
       if (e.code === 'EADDRINUSE') {
         // Unix file socket and error EADDRINUSE is the case if
         // the file socket exists. We check if other processes
@@ -389,7 +390,7 @@ Socket.prototype.bind = function (port, host, fn) {
         // We try to connect to socket via plain network socket
         const clientSocket = new net.Socket();
 
-        clientSocket.on('error', function (e2) {
+        clientSocket.on('error', function(e2) {
           if (e2.code === 'ECONNREFUSED') {
             // No other server listening, so we can delete stale
             // socket file and reopen server socket
@@ -400,7 +401,7 @@ Socket.prototype.bind = function (port, host, fn) {
 
         clientSocket.connect(
           { path: port },
-          function () {
+          function() {
             // Connection is possible, so other server is listening
             // on this file socket
             throw e;

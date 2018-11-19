@@ -1,5 +1,7 @@
 'use strict';
 
+/* eslint-disable */
+
 /**
  * Module dependencies.
  */
@@ -22,8 +24,8 @@ const debug = require('debug')('axon:queue');
  * @api private
  */
 // eslint-disable-next-line no-unused-vars
-module.exports = function (options = {}) {
-  return function (sock) {
+module.exports = function(options = {}) {
+  return function(sock) {
     /**
      * Message buffer.
      */
@@ -34,7 +36,7 @@ module.exports = function (options = {}) {
      * Flush `buf` on `connect`.
      */
 
-    sock.on('connect', function () {
+    sock.on('connect', function() {
       var prev = sock.queue;
       var len = prev.length;
       var i;
@@ -53,7 +55,7 @@ module.exports = function (options = {}) {
      * Pushes `msg` into `buf`.
      */
 
-    sock.enqueue = function (msg) {
+    sock.enqueue = function(msg) {
       var hwm = sock.settings.hwm;
       if (sock.queue.length >= hwm) return drop(msg);
       sock.queue.push(msg);
