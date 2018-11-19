@@ -41,23 +41,34 @@ function createSocket(opts = {}) {
   let connected = false;
   let server;
 
-  const socket = Object.assign(
-    {
-      settings,
-      use,
-      close,
-      closeServer,
-      address,
-      connect,
-      bind,
-      socks,
-      pack,
-      connected: () => connected
+  return {
+    on(evt, listener) {
+      emitter.on(evt, listener);
+      return this;
     },
-    emitter
-  );
-
-  return socket;
+    once(evt, listener) {
+      emitter.once(evt, listener);
+      return this;
+    },
+    off(evt, listener) {
+      emitter.off(evt, listener);
+      return this;
+    },
+    emit(evt, ...args) {
+      emitter.emit(evt, ...args);
+      return this;
+    },
+    settings,
+    use,
+    close,
+    closeServer,
+    address,
+    connect,
+    bind,
+    socks,
+    pack,
+    connected: () => connected
+  };
 
   /**
    * Close all open underlying sockets.
