@@ -1,8 +1,6 @@
 'use strict';
 
-/**
- * Module dependencies.
- */
+/* eslint-disable */
 
 const logger = require('pino')();
 var escape = require('escape-regexp');
@@ -80,7 +78,7 @@ function createSubSocket({ settings = {} }) {
    * @api private
    */
   function onmessage(sock) {
-    return function (buf) {
+    return function(buf) {
       const msg = new Message(buf);
 
       if (hasSubscriptions) {
