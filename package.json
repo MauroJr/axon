@@ -18,7 +18,11 @@
     "npm": ">=5.2.0"
   },
   "dependencies": {
-    "config": "^2.0.1"
+    "@bitbybit/amp": "^1.0.1",
+    "@bitbybit/amp-message": "^1.1.0",
+    "@bitbybit/emitter": "^1.0.2",
+    "config": "^2.0.2",
+    "pino": "^5.8.1"
   },
   "keywords": [
     "message-queue",
