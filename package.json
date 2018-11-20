@@ -22,6 +22,7 @@
     "@bitbybit/amp-message": "^1.1.0",
     "@bitbybit/emitter": "^1.0.2",
     "config": "^2.0.2",
+    "escape-regexp": "0.0.1",
     "pino": "^5.8.1"
   },
   "keywords": [
