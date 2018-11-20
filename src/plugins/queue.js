@@ -2,6 +2,8 @@
 
 /* eslint-disable */
 
+const logger = require('pino')();
+
 /**
  * Module dependencies.
  */
@@ -24,50 +26,51 @@ const debug = require('debug')('axon:queue');
  * @api private
  */
 // eslint-disable-next-line no-unused-vars
-module.exports = function(options = {}) {
-  return function(sock) {
-    /**
-     * Message buffer.
-     */
+module.exports = queue;
+
+function queue(sock) {
+  /**
+   * Message buffer.
+   */
+
+  sock.queue = [];
+
+  /**
+   * Flush `buf` on `connect`.
+   */
+
+  sock.on('connect', () => {
+    const prev = sock.queue;
+    const prevLen = prev.length;
+    var i;
 
     sock.queue = [];
+    logger.info(`flush ${prevLen} messages`);
 
-    /**
-     * Flush `buf` on `connect`.
-     */
-
-    sock.on('connect', function() {
-      var prev = sock.queue;
-      var len = prev.length;
-      var i;
-
-      sock.queue = [];
-      debug('flush %d messages', len);
-
-      for (i = 0; i < len; i += 1) {
-        this.send(...prev[i]);
-      }
-
-      sock.emit('flush', prev);
-    });
-
-    /**
-     * Pushes `msg` into `buf`.
-     */
-
-    sock.enqueue = function(msg) {
-      var hwm = sock.settings.hwm;
-      if (sock.queue.length >= hwm) return drop(msg);
-      sock.queue.push(msg);
-    };
-
-    /**
-     * Drop the given `msg`.
-     */
-
-    function drop(msg) {
-      debug('drop');
-      sock.emit('drop', msg);
+    let index = 0;
+    while (index < prevLen) {
+      sock.send(...prev[index]);
+      index += 1;
     }
+
+    sock.emit('flush', prev);
+  });
+
+  /**
+   * Pushes `msg` into `buf`.
+   */
+
+  sock.enqueue = function(msg) {
+    if (sock.queue.length >= sock.hwm) return drop(msg);
+    sock.queue.push(msg);
   };
-};
+
+  /**
+   * Drop the given `msg`.
+   */
+
+  function drop(msg) {
+    logger.info('drop');
+    sock.emit('drop', msg);
+  }
+}
