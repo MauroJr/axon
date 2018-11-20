@@ -47,7 +47,9 @@ function createSocket({ settings = {}, plugins = [] }) {
       closeServer,
       address,
       connect,
-      bind
+      bind,
+      socks: state.socks,
+      hwm: state.hwm
     },
     emitter
   );
